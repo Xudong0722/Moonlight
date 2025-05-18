@@ -176,7 +176,9 @@
       
     <div class="article-entry" itemprop="articleBody">
        
-  <p>LRU-最近最少使用缓存算法</p> 
+  <p>LRU-最近最少使用缓存算法</p>
+<p>实现方法：<br>1.双向链表(头尾节点不含元素)<br>2.哈希</p>
+<p>基于上述两个数据结构，我们可以实现以下方法：<br>1.put-O(1)： 添加一个元素到cache中，需要将这个元素放到队头，如果超过容量，需要剔除最后一个元素<br>2.get-O(1)： 获取一个元素，先通过哈希表判断cache中是否存在这个元素，如果存在将其调整到队头</p> 
       <a class="article-more-link" href="/2025/05/16/LRU-Cache/"
         >阅读更多...</a
       >
