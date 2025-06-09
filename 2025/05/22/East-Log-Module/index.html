@@ -80,7 +80,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> Word count:</span>
-            <span class="post-count">16</span>
+            <span class="post-count">899</span>
         </span>
     </span>
 
@@ -89,7 +89,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> Reading time≈</span>
-            <span class="post-count">1 min</span>
+            <span class="post-count">3 min</span>
         </span>
     </span>
 </div>
@@ -102,7 +102,43 @@
   
     <div class="article-entry" itemprop="articleBody">
        
-  <p>East项目的日志模块主要有以下几个类：</p>
+  <p>East项目的日志模块主要有以下几个类：<br>Log Module:</p>
+<ul>
+<li><p>LogAppender  - 日志输出地：可以派生出专门的类处理，如FileAppender等</p>
+</li>
+<li><p>LogEvent     - 日志事件： 包含一条log完整的信息，时间，行号，线程号等</p>
+</li>
+<li><p>LogFormatter - 日志格式化器： 包含一个模式串，决定了log的格式</p>
+</li>
+<li><p>Logger       - 日志类：管理LogAppender和LogFormatter</p>
+</li>
+<li><p>LoggerMgr    - 日志管理类： 统一存放所有的Logger， 默认有root logger</p>
+</li>
+<li><p>LogEventWrap - 日志时间包装类： 输出日志的核心类， 析构时打印日志</p>
+</li>
+</ul>
+<p>整个模块的类图如下</p>
+<p><img src="/../images/East-Log-module.jpg" alt="East Log Module"></p>
+<p>Note:<br>每一个Logger默认有一个名称，并且支持配置，如formatter，appenders等。</p>
+<p>Logger默认构造含有formatter和level，但是并没有默认的appender。</p>
+<p>如果我们从LoggerMgr中获取一个不存在的Logger，会去创建一个Logger，如果使用这个Logger去输出日志，则会使用LoggerMgr中创建的root logger(默认formatter和StdoutAppender)。</p>
+<p>日志输出的流程如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> ELOG_LEVEL(logger, level)                                    \</span></span><br><span class="line"><span class="meta">  <span class="keyword">if</span> (nullptr != logger &amp;&amp; logger-&gt;getLevel() &lt;= level)              \</span></span><br><span class="line"><span class="meta">  East::LogEventWrap(std::make_shared<span class="string">&lt;East::LogEvent&gt;</span>(               \</span></span><br><span class="line"><span class="meta">                         logger, level, __FILE__, __LINE__, 0,       \</span></span><br><span class="line"><span class="meta">                         static_cast<span class="string">&lt;uint32_t&gt;</span>(East::GetThreadId()), \</span></span><br><span class="line"><span class="meta">                         static_cast<span class="string">&lt;uint32_t&gt;</span>(East::GetFiberId()),  \</span></span><br><span class="line"><span class="meta">                         static_cast<span class="string">&lt;uint64_t&gt;</span>(time(0))))            \</span></span><br><span class="line"><span class="meta">      .getSStream()</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ELOG_DEBUG(logger) ELOG_LEVEL(logger, East::LogLevel::DEBUG)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ELOG_ROOT() East::LogMgr::GetInst()-&gt;getRoot()</span></span><br><span class="line"></span><br><span class="line">LogEventWrap::~<span class="built_in">LogEventWrap</span>() &#123;</span><br><span class="line">  <span class="keyword">if</span> (<span class="literal">nullptr</span> != m_event &amp;&amp; <span class="literal">nullptr</span> != m_event-&gt;<span class="built_in">getLogger</span>()) &#123;</span><br><span class="line">    m_event-&gt;<span class="built_in">getLogger</span>()-&gt;<span class="built_in">Log</span>(m_event-&gt;<span class="built_in">getLevel</span>(), m_event);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">当我们有如下调用时</span><br><span class="line">East::Logger::sptr g_logger = <span class="built_in">ELOG_ROOT</span>();</span><br><span class="line"><span class="built_in">ELOG_INFO</span>(g_logger) &lt;&lt; <span class="string">&quot;main begin&quot;</span>;</span><br><span class="line"></span><br><span class="line">我们会构造一个临时的LogEventWrap对象，构造时会按照当前的上下文填写日志信息构造一个LogEvent，</span><br><span class="line">当作用域结束后，这个临时对象就会析构，在析构函数中我们会使用logger中的Log函数将LogEvent中的</span><br><span class="line">日志信息输入到对应的LogAppender中。</span><br><span class="line"></span><br><span class="line">这种方法我们称之为RAII日志包裹器，简洁优雅并且无需我们自行调用Log函数，而且异常安全。</span><br><span class="line">缺点就是如果我们有实时打印日志的需求，那么需要我们添加作用域让LogEventWrap提前析构。</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<p>如果保证线程安全？<br>我们有多个logger， 每个logger可能有多个appender，我们的服务器框架肯定是支持多线程的，如果保证线程安全？</p>
+<p>我们的Logger，LoggerMgr, LogAppender都含有一个m_mutex成员。</p>
+<ul>
+<li>LoggerMgr是一个单例类，存放所有的Logger，那么我们需要一个锁来保证添加&#x2F;删除 Logger时是正确的</li>
+<li>Logger包含多个LogAppender, 同样的，涉及LogAppender操作时，也需要锁，并且输出log时也需要保证数据正确</li>
+<li>LogAppender负责日志输出，需要锁来保证并发写的安全<br>注意， 关于m_mutex我们可以自由选择用什么工具：互斥量，读写锁，自旋锁等</li>
+</ul>
+<p>实际测试中，我们发现互斥量的性能是最好的：<br>四个线程</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">无控制：         写log大概 100MB/s</span><br><span class="line"></span><br><span class="line">使用Mutex:       写log大概 40MB/s</span><br><span class="line"></span><br><span class="line">使用SpinLock：   写log大概 25MB/s</span><br></pre></td></tr></table></figure>
+<p>理论上来说写log，冲突发生较少，所以spinlock效率较高才合理，但是四个线程下mutex的确快很多，<br>但是我增加到10个线程测试结果还是一样，Mutex会快很多</p>
+<p>spinlock适用于非常短的临界区，我们测试下:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">bg: 5个线程, 每个线程都对一个全局变量执行++ 1000 0000次</span><br><span class="line"></span><br><span class="line">使用Mutex执行十次的平均耗时是：4874.5 ms</span><br><span class="line"></span><br><span class="line">使用SpinLock执行十次的平均耗时是：9112 ms</span><br></pre></td></tr></table></figure>
+<p>原因就是高竞争其实Spinlock会让CPU过度忙等待，而mutex会让出CPU，在我们这种场景下线程切换其实不太频繁，所以mutex效率更高。</p>
  
       <!-- reward -->
       
