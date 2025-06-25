@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+
+
+<html lang="en">
+  
+
+    <head>
+      <meta charset="utf-8" />
+        
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1"
+      />
+      <title>Corountine |  MoonLight</title>
+  <meta name="generator" content="hexo-theme-ayer">
+      
+      <link rel="shortcut icon" href="/favicon.ico" />
+       
+<link rel="stylesheet" href="/dist/main.css">
+
+      
+<link rel="stylesheet" href="/css/fonts/remixicon.css">
+
+      
+<link rel="stylesheet" href="/css/custom.css">
+ 
+      <script src="https://cdn.staticfile.org/pace/1.2.4/pace.min.js"></script>
+       
+ 
+
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bulma@5.0.1/bulma.min.css"
+      />
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
+
+      <!-- mermaid -->
+      
+      <style>
+        .swal2-styled.swal2-confirm {
+          font-size: 1.6rem;
+        }
+      </style>
+    </head>
+  </html>
+</html>
+
+
+<body>
+  <div id="app">
+    
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-Corountine"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  Corountine
+</h1>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2025/06/25/Corountine/" class="article-date">
+  <time datetime="2025-06-25T15:18:16.000Z" itemprop="datePublished">2025-06-25</time>
+</a>   
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> Word count:</span>
+            <span class="post-count">5.7k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> Reading time≈</span>
+            <span class="post-count">30 min</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Coroutines are computer program components that allow execution to be suspended and resumed, generalizing subroutines for cooperative multitasking. </span><br><span class="line">Coroutines are well-suited for implementing familiar program components such as cooperative tasks, exceptions, event loops, iterators, infinite lists and pipes.</span><br><span class="line"></span><br><span class="line">They have been described as &quot;functions whose execution you can pause&quot;.</span><br><span class="line"></span><br><span class="line">Melvin Conway coined the term coroutine in 1958 when he applied it to the construction of an assembly program. The first published explanation of the coroutine appeared later, in 1963.</span><br></pre></td></tr></table></figure>
+
+<p>左边是函数调用的流程， 右边是协程调用流<br><img src="/../images/coroutine-image-1.png" alt="alt text"></p>
+<p>根据上图，可以看出来协程的特点是可中断可恢复。<br>我们可以把它当成一个特殊的函数。</p>
+<h1 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h1><p>我们来看一个简单的协程（无栈协程）代码示例：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;coroutine&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Task</span> &#123;</span><br><span class="line">    <span class="keyword">class</span> <span class="title class_">promise_type</span>&#123;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        <span class="function">Task <span class="title">get_return_object</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> Task&#123; std::coroutine_handle&lt;promise_type&gt;::<span class="built_in">from_promise</span>(*<span class="keyword">this</span>)&#125;;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="function">std::suspend_never <span class="title">initial_suspend</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> &#123;&#125;; &#125;</span><br><span class="line">        <span class="function">std::suspend_never <span class="title">final_suspend</span><span class="params">()</span> <span class="keyword">noexcept</span> </span>&#123; <span class="keyword">return</span> &#123;&#125;; &#125;</span><br><span class="line">        <span class="function"><span class="type">void</span> <span class="title">unhandled_exception</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">        <span class="comment">//void return_void() &#123;&#125;</span></span><br><span class="line">    &#125;;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Task</span>(std::coroutine_handle&lt;promise_type&gt; handle) : <span class="built_in">coroutine_handle_</span>(handle) &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">resume</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        coroutine_handle_.<span class="built_in">resume</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    std::coroutine_handle&lt;promise_type&gt; coroutine_handle_;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function">Task <span class="title">hello_coroutine</span><span class="params">(<span class="type">int</span> n)</span> </span>&#123;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;hello &quot;</span>;</span><br><span class="line">    <span class="keyword">co_await</span> std::suspend_always&#123;&#125;;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot; coroutine &quot;</span> &lt;&lt; std::hex &lt;&lt; n &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> n&#123;<span class="number">0x3f</span>&#125;;</span><br><span class="line">    <span class="keyword">auto</span> task = <span class="built_in">hello_coroutine</span>(n);</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;---------&quot;</span>;</span><br><span class="line">    task.<span class="built_in">resume</span>();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>程序的运行结果是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hello --------- coroutine 3f</span><br></pre></td></tr></table></figure>
+
+<p>我们发现，打印完hello之后，程序没有继续打印后面的字符串，而是回到了main函数（协程调用方）中，在执行task.resume()之后又回到协程函数中继续执行。<br>我们发现hello_coroutine复合协程的定义，可中断可恢复。</p>
+<p>那么：</p>
+<ul>
+<li>1.如何跳转回调用方的？</li>
+<li>3.Task中的promise_type是什么？为什么要定义那些函数？</li>
+<li>4.co_await 关键字是什么？</li>
+<li>…</li>
+</ul>
+<p>后续无栈协程中将会解决上述问题。<br>协程在实现上主要分成两种：有栈协程和无栈协程。<br>所谓的有栈协程就是指运行环境的恢复是通过类似函数调用栈的思想实现的，而无栈协程是通过编译器对代码进行扩展实现的，思想和状态机类似。</p>
+<h1 id="有栈协程"><a href="#有栈协程" class="headerlink" title="有栈协程"></a>有栈协程</h1><p>我们知道，一般的函数调用是依赖栈的，在调用函数时会创建一个栈帧，在函数执行完成后回收栈帧。<br>而有栈协程就是在协程函数执行时申请一块内存，用户自行保存上下文&#x2F;切换上下文就可以实现协程的切换。</p>
+<p>我们简单回顾一下调用一个函数时，底层做了什么事情。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">func</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="type">int</span> x = <span class="number">100</span>;</span><br><span class="line">    <span class="keyword">return</span> x;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">func</span>();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>x86-64 gcc 13.2 (-m32) 得到的汇编指令如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">func():</span><br><span class="line">        pushl   %ebp</span><br><span class="line">        movl    %esp, %ebp</span><br><span class="line">        subl    $16, %esp</span><br><span class="line">        movl    $100, -4(%ebp)</span><br><span class="line">        movl    -4(%ebp), %eax</span><br><span class="line">        leave     //movl %ebp %esp   +   popl %ebp</span><br><span class="line">        ret       //popl %eip  将之前保存的 caller 的 return address 出栈并赋值给 eip      </span><br><span class="line">main:</span><br><span class="line">        pushl   %ebp</span><br><span class="line">        movl    %esp, %ebp</span><br><span class="line">        call    func()    //pushl %eip  + jmp func</span><br><span class="line">        movl    $0, %eax</span><br><span class="line">        popl    %ebp</span><br><span class="line">        ret</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/coroutine-image-2.png" alt="call func-1"><br><img src="/../images/coroutine-image-3.png" alt="call func-2"></p>
+<p>根据cdecl调用约定：<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/X86_calling_conventions#Caller-saved_(volatile)_registers">https://en.wikipedia.org/wiki/X86_calling_conventions#Caller-saved_(volatile)_registers</a><br><img src="/../images/coroutine-image-4.png" alt="cdecl"><br>以 x86 平台为例:</p>
+<ol>
+<li>%ebx-通用寄存器（callee-saved）</li>
+<li>%edi-通用寄存器（callee-saved）</li>
+<li>%esi-通用寄存器（callee-saved）</li>
+<li>%ebp-栈帧基地址指针</li>
+<li>%esp-栈顶指针</li>
+<li>ret address- 返回地址（即“下一条要执行的指令”）</li>
+</ol>
+<p>这些寄存器的组合能让协程在切回来时：</p>
+<ul>
+<li><p>找到栈位置（%esp）</p>
+</li>
+<li><p>恢复原函数返回的位置（ret address）</p>
+</li>
+<li><p>恢复原来的局部变量访问基址（%ebp）</p>
+</li>
+<li><p>恢复部分通用寄存器状态（如 %ebx, %esi, %edi）</p>
+</li>
+</ul>
+<p>其他寄存器如 %eax, %ecx, %edx 被认为是 caller-saved，不需要 callee 保存，调用者自己负责备份。<br>我们可以通过申请一段内存存放函数运行时的上下文，在恢复的时候将内存中的上下文复制到寄存器中，就可以模拟协程，</p>
+<p>stackful_co.c</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> CO_SIZE = <span class="number">1024</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">char</span>** s_main_co = <span class="literal">NULL</span>;</span><br><span class="line"><span class="type">static</span> <span class="type">char</span>** s_func_co = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">extern</span> <span class="type">void</span> <span class="title function_">swap_context</span><span class="params">(<span class="type">char</span> **cur_co, <span class="type">char</span>** next_co)</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">char</span>** <span class="title function_">init_context</span><span class="params">(<span class="type">char</span>* func)</span> &#123;</span><br><span class="line">  <span class="type">char</span>** ctx = (<span class="type">char</span>**) <span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="type">char</span>*) * CO_SIZE);</span><br><span class="line">  <span class="built_in">memset</span>(ctx, <span class="number">0</span>, <span class="keyword">sizeof</span>(<span class="type">char</span>*) * CO_SIZE);  <span class="comment">//用来存放上下文</span></span><br><span class="line"></span><br><span class="line">  *(ctx + CO_SIZE - <span class="number">1</span>) = (<span class="type">char</span>*)func;   <span class="comment">//这里为了方便，第一次调用时，将函数入口地址作为return address</span></span><br><span class="line">  *(ctx + CO_SIZE - <span class="number">6</span>) = (<span class="type">char</span>*)(ctx + CO_SIZE - <span class="number">7</span>);  <span class="comment">//预留6个寄存器，其余作为栈帧</span></span><br><span class="line">  <span class="keyword">return</span> ctx + CO_SIZE;   <span class="comment">//栈地址增长方向与堆地址增长方向不同</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">func</span><span class="params">()</span> &#123;</span><br><span class="line">  <span class="type">char</span>* str = <span class="string">&quot;hi, func.&quot;</span>;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;%s, before yield\n&quot;</span>, __FUNCTION__);</span><br><span class="line">  swap_context(s_func_co, s_main_co);</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;%s, func resume, %s\n&quot;</span>,__FUNCTION__,  str);</span><br><span class="line">  swap_context(s_func_co, s_main_co);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">  s_main_co = init_context((<span class="type">char</span>*)main);</span><br><span class="line">  s_func_co = init_context((<span class="type">char</span>*)func);</span><br><span class="line"></span><br><span class="line">  <span class="type">char</span>* str = <span class="string">&quot;hi, main.&quot;</span>;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;%s, before call func\n&quot;</span>, __FUNCTION__);</span><br><span class="line">  swap_context(s_main_co, s_func_co);</span><br><span class="line">  <span class="built_in">printf</span>( <span class="string">&quot;%s, main resume, %s\n&quot;</span>, __FUNCTION__,  str);</span><br><span class="line">  swap_context(s_main_co, s_func_co);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  <span class="built_in">free</span>(s_main_co - CO_SIZE);</span><br><span class="line">  <span class="built_in">free</span>(s_func_co - CO_SIZE);</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>swap_context.s</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">  .globl swap_context</span><br><span class="line">  .type swap_context, @function</span><br><span class="line"></span><br><span class="line">swap_context:</span><br><span class="line">    <span class="comment">//不会建立栈帧</span></span><br><span class="line">    movl <span class="number">4</span>(%esp), %eax    <span class="comment">//获取第一个参数cur_co, 存放在eax中</span></span><br><span class="line">    movl %ebx, <span class="number">-8</span>(%eax)   <span class="comment">//将各个寄存器中的值存储到cur_co中</span></span><br><span class="line">    movl %edi, <span class="number">-12</span>(%eax)</span><br><span class="line">    movl %esi, <span class="number">-16</span>(%eax)</span><br><span class="line">    movl %ebp, <span class="number">-20</span>(%eax)</span><br><span class="line">    movl %esp, <span class="number">-24</span>(%eax)</span><br><span class="line"></span><br><span class="line">    <span class="comment">//  %esp  存储的是当前调用栈的顶部所在的地址，</span></span><br><span class="line">    <span class="comment">// (%esp) 是顶部地址所指向的内存区域存储的值，即返回cur_co的返回地址</span></span><br><span class="line">    movl (%esp), %ecx</span><br><span class="line">    movl %ecx, <span class="number">-4</span>(%eax)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取 swap_ctx 的第二个参数 char **next_co</span></span><br><span class="line">    movl <span class="number">8</span>(%esp), %eax</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 依次将 next 存储的值写入各个寄存器，</span></span><br><span class="line">    movl  <span class="number">-8</span>(%eax), %ebx</span><br><span class="line">    movl <span class="number">-12</span>(%eax), %edi</span><br><span class="line">    movl <span class="number">-16</span>(%eax), %esi</span><br><span class="line">    movl <span class="number">-20</span>(%eax), %ebp</span><br><span class="line">    movl <span class="number">-24</span>(%eax), %esp</span><br><span class="line"></span><br><span class="line">    movl <span class="number">-4</span>(%eax), %ecx  <span class="comment">//前面约定了这个地址存放的是返回地址，所以我们将它赋值给esp指向的内容</span></span><br><span class="line">    movl %ecx, (%esp)</span><br><span class="line"></span><br><span class="line">    ret</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc -m32 stackful_co.c swap_context.s -o test</span><br></pre></td></tr></table></figure>
+
+<p>有栈协程缺点比较明显：</p>
+<ul>
+<li><p>如果申请的内存太大，可能会浪费内存，同时也限制了协程的数量。</p>
+</li>
+<li><p>如果申请的内存太小，可能会溢出的风险。</p>
+</li>
+<li><p>同时高频的有栈协程切换会破环CPU的栈缓冲区预测的优化，性能上限不如无栈协程。</p>
+</li>
+</ul>
+<p>不过Golang采用的就是有栈协程，在语言层面就原生支持协程-goroutine，他的栈空间可以根据需要扩容或缩减，所有协程统一在运行时由调度器管理，G-M-P模型。</p>
+<h1 id="无栈协程"><a href="#无栈协程" class="headerlink" title="无栈协程"></a>无栈协程</h1><p>相较于有栈协程这种朴素的实现方式，c++20的协程是无栈协程，他采用的是状态机的思想，通过编译器生成代码实现协程上下文之间的切换。</p>
+<p>在c++20中，如果函数中出现了这co_await， co_yield，co_return这三个关键字，该函数就被认为是协程。他们的含义如下：</p>
+<p>co_await<br>co_await的操作对象必须是一个awaitable object，它需要定义如下几个函数来保证协程的正常执行：</p>
+<ul>
+<li>await_ready() 如果返回true，代表协程已经准备就绪不需要挂起，否则挂起协程。</li>
+<li>await_suspend() 该函数可以定义协程挂起时的行为，同时，该函数参数为协程句柄，这意味着我们可以在这个函数中那个恢复协程。</li>
+<li>await_resume() 当协程恢复执行或者协程不需要挂起的时候，就会执行这个函数。</li>
+</ul>
+<p>c++预定义了两个awaitable object，分别是suspend_always和suspend_never，他们的区别就是await_ready的返回值不同，<br>前者表示总是挂起，后者表示总是不挂起</p>
+<p>介绍另外两个之前，还需要注明下协程的返回值，举个例子：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">Task</span> &#123;</span><br><span class="line">        <span class="keyword">class</span> <span class="title class_">promise_type</span> &#123;</span><br><span class="line">        <span class="keyword">public</span>:</span><br><span class="line">                <span class="function">Task <span class="title">get_return_object</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> &#123;&#125;;&#125;    <span class="comment">//协程开始执行之前，会执行此函数，构造一个返回值</span></span><br><span class="line">                <span class="function">std::suspend_never <span class="title">initial_suspend</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> &#123;&#125;;&#125;   <span class="comment">//协程开始执行后，会先执行此函数，这里可以控制协程是否挂起</span></span><br><span class="line">                <span class="function">std::suspend_never <span class="title">final_suspend</span><span class="params">()</span> <span class="keyword">noexcept</span> </span>&#123; <span class="keyword">return</span> &#123;&#125;;&#125;  <span class="comment">//协程结束执行时，会执行此函数，可以控制协程是否挂起，标准要求该函数必须是noexcept</span></span><br><span class="line">                <span class="function"><span class="type">void</span> <span class="title">unhandled_exception</span><span class="params">()</span> </span>&#123;&#125;   <span class="comment">//处理协程中的异常行为</span></span><br><span class="line">                <span class="function"><span class="type">void</span> <span class="title">return_void</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">                <span class="function">std::suspend_always <span class="title">yield_value</span><span class="params">(T xxx)</span> </span>&#123; <span class="comment">/*...*/</span> <span class="keyword">return</span> &#123;&#125;&#125;   <span class="comment">//co_yield 要求实现此方法，并将返回值传递给co_await</span></span><br><span class="line"></span><br><span class="line">                </span><br><span class="line">        &#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>返回值的类型中需要定义一个promise_type，前面提到这些函数会在什么时候执行，所以我们可以通过自定义这些函数的行为来完全控制协程的行为，</p>
+<p>co_yield<br>如果协程需要多次返回数据，就需要用到co_yield<br>它要求promise_type 实现yield_value() 方法，该方法要求返回值必须是awaitable object，执行后将该对象传递给co_await</p>
+<p>co_return<br>它要求promise_type 实现 return_value() 方法，如果co_return不带任何参数，将会调用return_void()方法。<br>该方法执行完之后将会执行final_suspend, 最后销毁协程。</p>
+<p>我们再通过一个例子来学习下协程的创建流程：<br><img src="/../images/coroutine-image.png" alt="协程创建"><br>创建协程的流程：</p>
+<ul>
+<li>创建一个协程帧-coroutine frame</li>
+<li>在协程帧里面构建promise对象</li>
+<li>把协程的参数拷贝到协程帧里</li>
+<li>调用promise.get_return_object() 返回一个对象</li>
+</ul>
+<p>promise_type中的定制点：</p>
+<ul>
+<li>initial_suspend: 在协程创建后调用， 可以控制是否挂起</li>
+<li>final_suspend: 在协程执行结束后调用，这里也可以控制是否挂起</li>
+<li>return_value: 保存协程返回值</li>
+<li>unhandled_exception: 处理异常</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;coroutine&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;thread&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> Coroutine &#123;</span><br><span class="line">  <span class="keyword">struct</span> <span class="title class_">task</span> &#123;</span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">promise_type</span> &#123;</span><br><span class="line">      <span class="built_in">promise_type</span>() &#123;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;1.create promie object\n&quot;</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="function">task <span class="title">get_return_object</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;2.create coroutine return object, and the coroutine is created now\n&quot;</span>;</span><br><span class="line">        <span class="keyword">return</span> &#123;std::coroutine_handle&lt;task::promise_type&gt;::<span class="built_in">from_promise</span>(*<span class="keyword">this</span>)&#125;;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="function">std::suspend_never <span class="title">initial_suspend</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;3.do you want to susupend the current coroutine?\n&quot;</span>;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;4.don&#x27;t suspend because return std::suspend_never, so continue to execute coroutine body\n&quot;</span>;</span><br><span class="line">        <span class="keyword">return</span> &#123;&#125;;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="function">std::suspend_never <span class="title">final_suspend</span><span class="params">()</span> <span class="keyword">noexcept</span> </span>&#123;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;13.coroutine body finished, do you want to susupend the current coroutine?\n&quot;</span>;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;14.don&#x27;t suspend because return std::suspend_never, and the continue will be automatically destroyed, bye\n&quot;</span>;</span><br><span class="line">        <span class="keyword">return</span> &#123;&#125;;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="function"><span class="type">void</span> <span class="title">return_void</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;12.coroutine don&#x27;t return value, so return_void is called\n&quot;</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="function"><span class="type">void</span> <span class="title">unhandled_exception</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    std::coroutine_handle&lt;task::promise_type&gt; handle_;</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">struct</span> <span class="title class_">awaiter</span> &#123;</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">await_ready</span><span class="params">()</span> </span>&#123;</span><br><span class="line">      std::cout &lt;&lt; <span class="string">&quot;6.do you want to suspend current coroutine?\n&quot;</span>;</span><br><span class="line">      std::cout &lt;&lt; <span class="string">&quot;7.yes, suspend becase awaiter.await_ready() return false\n&quot;</span>;</span><br><span class="line">      <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">await_suspend</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">      std::coroutine_handle&lt;task::promise_type&gt; handle)</span> </span>&#123;</span><br><span class="line">      std::cout &lt;&lt; <span class="string">&quot;8.execute awaiter.await_suspend()\n&quot;</span>;</span><br><span class="line">      std::<span class="built_in">thread</span>([handle]() <span class="keyword">mutable</span> &#123; <span class="built_in">handle</span>(); &#125;).<span class="built_in">detach</span>();</span><br><span class="line">      std::cout &lt;&lt; <span class="string">&quot;9.a new thread lauched, and will return back to caller\n&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">await_resume</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="function">task <span class="title">test</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;5.begin to execute coroutine body, the thread id=&quot;</span> &lt;&lt; std::this_thread::<span class="built_in">get_id</span>() &lt;&lt; <span class="string">&quot;\n&quot;</span>;<span class="comment">//#1</span></span><br><span class="line">    <span class="keyword">co_await</span> awaiter&#123;&#125;;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;11.coroutine resumed, continue execcute coroutine body now, the thread id=&quot;</span> &lt;&lt; std::this_thread::<span class="built_in">get_id</span>() &lt;&lt; <span class="string">&quot;\n&quot;</span>;<span class="comment">//#3</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;<span class="comment">// namespace Coroutine</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  Coroutine::<span class="built_in">test</span>();</span><br><span class="line">  std::cout &lt;&lt; <span class="string">&quot;10.come back to caller becuase of co_await awaiter\n&quot;</span>;</span><br><span class="line">  std::this_thread::<span class="built_in">sleep_for</span>(std::chrono::<span class="built_in">seconds</span>(<span class="number">1</span>));</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这是示例代码在x86上gcc 13.2生成的汇编代码，基于此有几点我们可以关注：</p>
+<p>1.协程的状态以及上下文是保存在堆上的</p>
+<p>2.协程是一个状态机，编译器为协程的中断点&#x2F;恢复点设置了一个状态，实现了跳转</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br><span class="line">317</span><br><span class="line">318</span><br><span class="line">319</span><br><span class="line">320</span><br><span class="line">321</span><br><span class="line">322</span><br><span class="line">323</span><br><span class="line">324</span><br><span class="line">325</span><br><span class="line">326</span><br><span class="line">327</span><br><span class="line">328</span><br><span class="line">329</span><br><span class="line">330</span><br><span class="line">331</span><br><span class="line">332</span><br><span class="line">333</span><br><span class="line">334</span><br><span class="line">335</span><br><span class="line">336</span><br><span class="line">337</span><br><span class="line">338</span><br><span class="line">339</span><br><span class="line">340</span><br><span class="line">341</span><br><span class="line">342</span><br><span class="line">343</span><br><span class="line">344</span><br><span class="line">345</span><br><span class="line">346</span><br><span class="line">347</span><br><span class="line">348</span><br><span class="line">349</span><br><span class="line">350</span><br><span class="line">351</span><br><span class="line">352</span><br><span class="line">353</span><br><span class="line">354</span><br><span class="line">355</span><br><span class="line">356</span><br><span class="line">357</span><br><span class="line">358</span><br><span class="line">359</span><br><span class="line">360</span><br><span class="line">361</span><br><span class="line">362</span><br><span class="line">363</span><br><span class="line">364</span><br><span class="line">365</span><br><span class="line">366</span><br><span class="line">367</span><br><span class="line">368</span><br><span class="line">369</span><br><span class="line">370</span><br><span class="line">371</span><br><span class="line">372</span><br><span class="line">373</span><br><span class="line">374</span><br><span class="line">375</span><br><span class="line">376</span><br><span class="line">377</span><br><span class="line">378</span><br><span class="line">379</span><br><span class="line">380</span><br><span class="line">381</span><br><span class="line">382</span><br><span class="line">383</span><br><span class="line">384</span><br><span class="line">385</span><br><span class="line">386</span><br><span class="line">387</span><br><span class="line">388</span><br><span class="line">389</span><br><span class="line">390</span><br><span class="line">391</span><br><span class="line">392</span><br><span class="line">393</span><br><span class="line">394</span><br><span class="line">395</span><br><span class="line">396</span><br><span class="line">397</span><br><span class="line">398</span><br><span class="line">399</span><br><span class="line">400</span><br><span class="line">401</span><br><span class="line">402</span><br><span class="line">403</span><br><span class="line">404</span><br><span class="line">405</span><br><span class="line">406</span><br><span class="line">407</span><br><span class="line">408</span><br><span class="line">409</span><br><span class="line">410</span><br><span class="line">411</span><br><span class="line">412</span><br><span class="line">413</span><br><span class="line">414</span><br><span class="line">415</span><br><span class="line">416</span><br></pre></td><td class="code"><pre><span class="line">Task::promise_type::get_return_object():</span><br><span class="line">        push    ebp</span><br><span class="line">        mov     ebp, esp</span><br><span class="line">        sub     esp, 24</span><br><span class="line">        lea     eax, [ebp-12]</span><br><span class="line">        sub     esp, 8</span><br><span class="line">        push    DWORD PTR [ebp+12]</span><br><span class="line">        push    eax</span><br><span class="line">        call    std::__n4861::coroutine_handle&lt;Task::promise_type&gt;::from_promise(Task::promise_type&amp;)</span><br><span class="line">        add     esp, 12</span><br><span class="line">        sub     esp, 8</span><br><span class="line">        push    DWORD PTR [ebp-12]</span><br><span class="line">        push    DWORD PTR [ebp+8]</span><br><span class="line">        call    Task::Task(std::__n4861::coroutine_handle&lt;Task::promise_type&gt;) [complete object constructor]</span><br><span class="line">        add     esp, 16</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        leave</span><br><span class="line">        ret     4</span><br><span class="line">Task::promise_type::initial_suspend():</span><br><span class="line">        push    ebp</span><br><span class="line">        mov     ebp, esp</span><br><span class="line">        nop</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        pop     ebp</span><br><span class="line">        ret     4</span><br><span class="line">Task::promise_type::final_suspend():</span><br><span class="line">        push    ebp</span><br><span class="line">        mov     ebp, esp</span><br><span class="line">        nop</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        pop     ebp</span><br><span class="line">        ret     4</span><br><span class="line">Task::promise_type::unhandled_exception():</span><br><span class="line">        push    ebp</span><br><span class="line">        mov     ebp, esp</span><br><span class="line">        nop</span><br><span class="line">        pop     ebp</span><br><span class="line">        ret</span><br><span class="line">Task::Task(std::__n4861::coroutine_handle&lt;Task::promise_type&gt;) [base object constructor]:</span><br><span class="line">        push    ebp</span><br><span class="line">        mov     ebp, esp</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        mov     edx, DWORD PTR [ebp+12]</span><br><span class="line">        mov     DWORD PTR [eax], edx</span><br><span class="line">        nop</span><br><span class="line">        pop     ebp</span><br><span class="line">        ret</span><br><span class="line">Task::resume():</span><br><span class="line">        push    ebp</span><br><span class="line">        mov     ebp, esp</span><br><span class="line">        sub     esp, 8</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        sub     esp, 12</span><br><span class="line">        push    eax</span><br><span class="line">        call    std::__n4861::coroutine_handle&lt;Task::promise_type&gt;::resume() const</span><br><span class="line">        add     esp, 16</span><br><span class="line">        nop</span><br><span class="line">        leave</span><br><span class="line">        ret</span><br><span class="line">hello_coroutine(int):</span><br><span class="line">        push    ebp</span><br><span class="line">        mov     ebp, esp</span><br><span class="line">        sub     esp, 24</span><br><span class="line">        mov     BYTE PTR [ebp-9], 0</span><br><span class="line">        mov     BYTE PTR [ebp-10], 0</span><br><span class="line">        mov     eax, 28</span><br><span class="line">        sub     esp, 12</span><br><span class="line">        push    eax</span><br><span class="line">        call    operator new(unsigned int)</span><br><span class="line">        add     esp, 16</span><br><span class="line">        mov     DWORD PTR [ebp-16], eax</span><br><span class="line">        mov     eax, DWORD PTR [ebp-16]</span><br><span class="line">        mov     BYTE PTR [eax+22], 1</span><br><span class="line">        mov     eax, DWORD PTR [ebp-16]</span><br><span class="line">        mov     DWORD PTR [eax], OFFSET FLAT:hello_coroutine(_Z15hello_coroutinei.Frame*) (.actor)</span><br><span class="line">        mov     eax, DWORD PTR [ebp-16]</span><br><span class="line">        mov     DWORD PTR [eax+4], OFFSET FLAT:hello_coroutine(_Z15hello_coroutinei.Frame*) (.destroy)</span><br><span class="line">        mov     edx, DWORD PTR [ebp+12]</span><br><span class="line">        mov     eax, DWORD PTR [ebp-16]</span><br><span class="line">        mov     DWORD PTR [eax+16], edx</span><br><span class="line">        mov     eax, DWORD PTR [ebp-16]</span><br><span class="line">        mov     WORD PTR [eax+20], 0</span><br><span class="line">        mov     eax, DWORD PTR [ebp-16]</span><br><span class="line">        mov     BYTE PTR [eax+23], 0</span><br><span class="line">        mov     eax, DWORD PTR [ebp-16]</span><br><span class="line">        lea     edx, [eax+8]</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        sub     esp, 8</span><br><span class="line">        push    edx</span><br><span class="line">        push    eax</span><br><span class="line">        call    Task::promise_type::get_return_object()</span><br><span class="line">        add     esp, 12</span><br><span class="line">        sub     esp, 12</span><br><span class="line">        push    DWORD PTR [ebp-16]</span><br><span class="line">        call    hello_coroutine(_Z15hello_coroutinei.Frame*) (.actor)</span><br><span class="line">        add     esp, 16</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        leave</span><br><span class="line">        ret     4</span><br><span class="line">.LC0:</span><br><span class="line">        .string &quot;hello &quot;</span><br><span class="line">.LC1:</span><br><span class="line">        .string &quot; coroutine &quot;</span><br><span class="line">hello_coroutine(_Z15hello_coroutinei.Frame*) (.actor):</span><br><span class="line">        push    ebp</span><br><span class="line">        mov     ebp, esp</span><br><span class="line">        push    ebx</span><br><span class="line">        sub     esp, 36</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        movzx   eax, WORD PTR [eax+20]</span><br><span class="line">        and     eax, 1</span><br><span class="line">        test    ax, ax</span><br><span class="line">        je      .L37</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        movzx   eax, WORD PTR [eax+20]</span><br><span class="line">        movzx   eax, ax</span><br><span class="line">        cmp     eax, 7</span><br><span class="line">        je      .L46</span><br><span class="line">        cmp     eax, 7</span><br><span class="line">        jg      .L47</span><br><span class="line">        cmp     eax, 5</span><br><span class="line">        je      .L45</span><br><span class="line">        cmp     eax, 5</span><br><span class="line">        jg      .L47</span><br><span class="line">        cmp     eax, 1</span><br><span class="line">        je      .L68</span><br><span class="line">        cmp     eax, 3</span><br><span class="line">        je      .L44</span><br><span class="line">        jmp     .L47</span><br><span class="line">.L37:</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        movzx   eax, WORD PTR [eax+20]</span><br><span class="line">        movzx   eax, ax</span><br><span class="line">        cmp     eax, 6</span><br><span class="line">        je      .L56</span><br><span class="line">        cmp     eax, 6</span><br><span class="line">        jg      .L47</span><br><span class="line">        cmp     eax, 4</span><br><span class="line">        je      .L55</span><br><span class="line">        cmp     eax, 4</span><br><span class="line">        jg      .L47</span><br><span class="line">        test    eax, eax</span><br><span class="line">        je      .L51</span><br><span class="line">        cmp     eax, 2</span><br><span class="line">        je      .L54</span><br><span class="line">        jmp     .L47</span><br><span class="line">.L51:</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        add     eax, 12</span><br><span class="line">        sub     esp, 8</span><br><span class="line">        push    DWORD PTR [ebp+8]</span><br><span class="line">        push    eax</span><br><span class="line">        call    std::__n4861::coroutine_handle&lt;Task::promise_type&gt;::from_address(void*)</span><br><span class="line">        add     esp, 12</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        mov     BYTE PTR [eax+23], 0</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        lea     edx, [eax+8]</span><br><span class="line">        lea     eax, [ebp-25]</span><br><span class="line">        sub     esp, 8</span><br><span class="line">        push    edx</span><br><span class="line">        push    eax</span><br><span class="line">        call    Task::promise_type::initial_suspend()</span><br><span class="line">        add     esp, 12</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        mov     WORD PTR [eax+20], 2</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        add     eax, 24</span><br><span class="line">        sub     esp, 12</span><br><span class="line">        push    eax</span><br><span class="line">        call    std::__n4861::suspend_never::await_ready() const</span><br><span class="line">        add     esp, 16</span><br><span class="line">        xor     eax, 1</span><br><span class="line">        test    al, al</span><br><span class="line">        jne     .L53</span><br><span class="line">        jmp     .L54</span><br><span class="line">.L47:</span><br><span class="line">        ud2</span><br><span class="line">.L53:</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        lea     ebx, [eax+24]</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        lea     edx, [eax+12]</span><br><span class="line">        lea     eax, [ebp-20]</span><br><span class="line">        sub     esp, 8</span><br><span class="line">        push    edx</span><br><span class="line">        push    eax</span><br><span class="line">        call    std::__n4861::coroutine_handle&lt;Task::promise_type&gt;::operator std::__n4861::coroutine_handle&lt;void&gt;() const</span><br><span class="line">        add     esp, 12</span><br><span class="line">        sub     esp, 8</span><br><span class="line">        push    DWORD PTR [ebp-20]</span><br><span class="line">        push    ebx</span><br><span class="line">        call    std::__n4861::suspend_never::await_suspend(std::__n4861::coroutine_handle&lt;void&gt;) const</span><br><span class="line">        add     esp, 16</span><br><span class="line">        jmp     .L57</span><br><span class="line">.L44:</span><br><span class="line">        jmp     .L43</span><br><span class="line">.L54:</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        mov     BYTE PTR [eax+23], 1</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        add     eax, 24</span><br><span class="line">        sub     esp, 12</span><br><span class="line">        push    eax</span><br><span class="line">        call    std::__n4861::suspend_never::await_resume() const</span><br><span class="line">        add     esp, 16</span><br><span class="line">        sub     esp, 8</span><br><span class="line">        push    OFFSET FLAT:.LC0</span><br><span class="line">        push    OFFSET FLAT:_ZSt4cout</span><br><span class="line">        call    std::basic_ostream&lt;char, std::char_traits&lt;char&gt;&gt;&amp; std::operator&lt;&lt;&lt;std::char_traits&lt;char&gt;&gt;(std::basic_ostream&lt;char, std::char_traits&lt;char&gt;&gt;&amp;, char const*)</span><br><span class="line">        add     esp, 16</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        mov     WORD PTR [eax+20], 4</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        add     eax, 25</span><br><span class="line">        sub     esp, 12</span><br><span class="line">        push    eax</span><br><span class="line">        call    std::__n4861::suspend_always::await_ready() const</span><br><span class="line">        add     esp, 16</span><br><span class="line">        xor     eax, 1</span><br><span class="line">        test    al, al</span><br><span class="line">        je      .L55</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        lea     ebx, [eax+25]</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        lea     edx, [eax+12]</span><br><span class="line">        lea     eax, [ebp-16]</span><br><span class="line">        sub     esp, 8</span><br><span class="line">        push    edx</span><br><span class="line">        push    eax</span><br><span class="line">        call    std::__n4861::coroutine_handle&lt;Task::promise_type&gt;::operator std::__n4861::coroutine_handle&lt;void&gt;() const</span><br><span class="line">        add     esp, 12</span><br><span class="line">        sub     esp, 8</span><br><span class="line">        push    DWORD PTR [ebp-16]</span><br><span class="line">        push    ebx</span><br><span class="line">        call    std::__n4861::suspend_always::await_suspend(std::__n4861::coroutine_handle&lt;void&gt;) const</span><br><span class="line">        add     esp, 16</span><br><span class="line">        jmp     .L57</span><br><span class="line">.L45:</span><br><span class="line">        jmp     .L43</span><br><span class="line">.L55:</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        add     eax, 25</span><br><span class="line">        sub     esp, 12</span><br><span class="line">        push    eax</span><br><span class="line">        call    std::__n4861::suspend_always::await_resume() const</span><br><span class="line">        add     esp, 16</span><br><span class="line">        sub     esp, 8</span><br><span class="line">        push    OFFSET FLAT:.LC1</span><br><span class="line">        push    OFFSET FLAT:_ZSt4cout</span><br><span class="line">        call    std::basic_ostream&lt;char, std::char_traits&lt;char&gt;&gt;&amp; std::operator&lt;&lt;&lt;std::char_traits&lt;char&gt;&gt;(std::basic_ostream&lt;char, std::char_traits&lt;char&gt;&gt;&amp;, char const*)</span><br><span class="line">        add     esp, 16</span><br><span class="line">        sub     esp, 8</span><br><span class="line">        push    OFFSET FLAT:_ZSt3hexRSt8ios_base</span><br><span class="line">        push    eax</span><br><span class="line">        call    std::ostream::operator&lt;&lt;(std::ios_base&amp; (*)(std::ios_base&amp;))</span><br><span class="line">        add     esp, 16</span><br><span class="line">        mov     edx, DWORD PTR [ebp+8]</span><br><span class="line">        mov     edx, DWORD PTR [edx+16]</span><br><span class="line">        sub     esp, 8</span><br><span class="line">        push    edx</span><br><span class="line">        push    eax</span><br><span class="line">        call    std::ostream::operator&lt;&lt;(int)</span><br><span class="line">        add     esp, 16</span><br><span class="line">        sub     esp, 8</span><br><span class="line">        push    10</span><br><span class="line">        push    eax</span><br><span class="line">        call    std::basic_ostream&lt;char, std::char_traits&lt;char&gt;&gt;&amp; std::operator&lt;&lt;&lt;std::char_traits&lt;char&gt;&gt;(std::basic_ostream&lt;char, std::char_traits&lt;char&gt;&gt;&amp;, char)</span><br><span class="line">        add     esp, 16</span><br><span class="line">.L63:</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        mov     DWORD PTR [eax], 0</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        lea     edx, [eax+8]</span><br><span class="line">        lea     eax, [ebp-25]</span><br><span class="line">        sub     esp, 8</span><br><span class="line">        push    edx</span><br><span class="line">        push    eax</span><br><span class="line">        call    Task::promise_type::final_suspend()</span><br><span class="line">        add     esp, 12</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        mov     WORD PTR [eax+20], 6</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        add     eax, 26</span><br><span class="line">        sub     esp, 12</span><br><span class="line">        push    eax</span><br><span class="line">        call    std::__n4861::suspend_never::await_ready() const</span><br><span class="line">        add     esp, 16</span><br><span class="line">        xor     eax, 1</span><br><span class="line">        test    al, al</span><br><span class="line">        je      .L56</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        lea     ebx, [eax+26]</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        lea     edx, [eax+12]</span><br><span class="line">        lea     eax, [ebp-12]</span><br><span class="line">        sub     esp, 8</span><br><span class="line">        push    edx</span><br><span class="line">        push    eax</span><br><span class="line">        call    std::__n4861::coroutine_handle&lt;Task::promise_type&gt;::operator std::__n4861::coroutine_handle&lt;void&gt;() const</span><br><span class="line">        add     esp, 12</span><br><span class="line">        sub     esp, 8</span><br><span class="line">        push    DWORD PTR [ebp-12]</span><br><span class="line">        push    ebx</span><br><span class="line">        call    std::__n4861::suspend_never::await_suspend(std::__n4861::coroutine_handle&lt;void&gt;) const</span><br><span class="line">        add     esp, 16</span><br><span class="line">        jmp     .L57</span><br><span class="line">.L46:</span><br><span class="line">        jmp     .L43</span><br><span class="line">.L56:</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        add     eax, 26</span><br><span class="line">        sub     esp, 12</span><br><span class="line">        push    eax</span><br><span class="line">        call    std::__n4861::suspend_never::await_resume() const</span><br><span class="line">        add     esp, 16</span><br><span class="line">        jmp     .L43</span><br><span class="line">.L68:</span><br><span class="line">        nop</span><br><span class="line">.L43:</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        movzx   eax, BYTE PTR [eax+22]</span><br><span class="line">        movzx   eax, al</span><br><span class="line">        test    eax, eax</span><br><span class="line">        je      .L69</span><br><span class="line">        sub     esp, 8</span><br><span class="line">        push    28</span><br><span class="line">        push    DWORD PTR [ebp+8]</span><br><span class="line">        call    operator delete(void*, unsigned int)</span><br><span class="line">        add     esp, 16</span><br><span class="line">        jmp     .L69</span><br><span class="line">.L57:</span><br><span class="line">        jmp     .L69</span><br><span class="line">        sub     esp, 12</span><br><span class="line">        push    eax</span><br><span class="line">        call    __cxa_begin_catch</span><br><span class="line">        add     esp, 16</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        movzx   eax, BYTE PTR [eax+23]</span><br><span class="line">        xor     eax, 1</span><br><span class="line">        test    al, al</span><br><span class="line">        je      .L62</span><br><span class="line">        call    __cxa_rethrow</span><br><span class="line">.L62:</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        mov     DWORD PTR [eax], 0</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        mov     WORD PTR [eax+20], 0</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        add     eax, 8</span><br><span class="line">        sub     esp, 12</span><br><span class="line">        push    eax</span><br><span class="line">        call    Task::promise_type::unhandled_exception()</span><br><span class="line">        add     esp, 16</span><br><span class="line">        call    __cxa_end_catch</span><br><span class="line">        jmp     .L63</span><br><span class="line">        mov     ebx, eax</span><br><span class="line">        call    __cxa_end_catch</span><br><span class="line">        mov     eax, ebx</span><br><span class="line">        sub     esp, 12</span><br><span class="line">        push    eax</span><br><span class="line">        call    _Unwind_Resume</span><br><span class="line">.L69:</span><br><span class="line">        nop</span><br><span class="line">        mov     ebx, DWORD PTR [ebp-4]</span><br><span class="line">        leave</span><br><span class="line">        ret</span><br><span class="line">hello_coroutine(_Z15hello_coroutinei.Frame*) (.destroy):</span><br><span class="line">        push    ebp</span><br><span class="line">        mov     ebp, esp</span><br><span class="line">        sub     esp, 8</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        movzx   eax, WORD PTR [eax+20]</span><br><span class="line">        or      eax, 1</span><br><span class="line">        mov     edx, eax</span><br><span class="line">        mov     eax, DWORD PTR [ebp+8]</span><br><span class="line">        mov     WORD PTR [eax+20], dx</span><br><span class="line">        sub     esp, 12</span><br><span class="line">        push    DWORD PTR [ebp+8]</span><br><span class="line">        call    hello_coroutine(_Z15hello_coroutinei.Frame*) (.actor)</span><br><span class="line">        add     esp, 16</span><br><span class="line">        nop</span><br><span class="line">        leave</span><br><span class="line">        ret</span><br><span class="line">.LC2:</span><br><span class="line">        .string &quot;---------&quot;</span><br><span class="line">main:</span><br><span class="line">        lea     ecx, [esp+4]</span><br><span class="line">        and     esp, -16</span><br><span class="line">        push    DWORD PTR [ecx-4]</span><br><span class="line">        push    ebp</span><br><span class="line">        mov     ebp, esp</span><br><span class="line">        push    ecx</span><br><span class="line">        sub     esp, 20</span><br><span class="line">        mov     DWORD PTR [ebp-12], 63</span><br><span class="line">        lea     eax, [ebp-16]</span><br><span class="line">        sub     esp, 8</span><br><span class="line">        push    DWORD PTR [ebp-12]</span><br><span class="line">        push    eax</span><br><span class="line">        call    hello_coroutine(int)</span><br><span class="line">        add     esp, 12</span><br><span class="line">        sub     esp, 8</span><br><span class="line">        push    OFFSET FLAT:.LC2</span><br><span class="line">        push    OFFSET FLAT:_ZSt4cout</span><br><span class="line">        call    std::basic_ostream&lt;char, std::char_traits&lt;char&gt;&gt;&amp; std::operator&lt;&lt;&lt;std::char_traits&lt;char&gt;&gt;(std::basic_ostream&lt;char, std::char_traits&lt;char&gt;&gt;&amp;, char const*)</span><br><span class="line">        add     esp, 16</span><br><span class="line">        sub     esp, 12</span><br><span class="line">        lea     eax, [ebp-16]</span><br><span class="line">        push    eax</span><br><span class="line">        call    Task::resume()</span><br><span class="line">        add     esp, 16</span><br><span class="line">        mov     eax, 0</span><br><span class="line">        mov     ecx, DWORD PTR [ebp-4]</span><br><span class="line">        leave</span><br><span class="line">        lea     esp, [ecx-4]</span><br><span class="line">        ret</span><br></pre></td></tr></table></figure>
+
+<p>c++20的协程比较抽象，他提供了定制点给程序员，让协程更加灵活，所以这也意味着我们如果要使用协程最好进行封装，让协程更好用，目前Github上已经有更多相关的的协程库：</p>
+<ul>
+<li>GitHub - lewissbaker&#x2F;cppcoro: A library of C++ coroutine abstractions for the coroutines TS</li>
+<li>GitHub - alibaba&#x2F;async_simple: Simple, light-weight and easy-to-use asynchronous components</li>
+</ul>
+<p>实际上，switch语句的效果和状态机思想比较相像，我们是否可以用switch case来模拟无栈协程？</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> label = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">get_next</span><span class="params">()</span></span>&#123;</span><br><span class="line">  <span class="type">static</span> <span class="type">int</span> i = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">switch</span>(label) &#123;</span><br><span class="line">  <span class="keyword">case</span> <span class="number">0</span>:&#123;</span><br><span class="line">    <span class="keyword">for</span>(; i&lt;<span class="number">100</span>; ++i) &#123;</span><br><span class="line">      label = <span class="number">1</span>;</span><br><span class="line">      <span class="keyword">return</span> i;</span><br><span class="line">      <span class="keyword">case</span> <span class="number">1</span>:;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">default</span>:</span><br><span class="line">    <span class="keyword">break</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i&lt;<span class="number">10</span>; ++i) &#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;No.%d, get_next() = %d\n&quot;</span>, i, <span class="built_in">get_next</span>());</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>程序的运行结果是：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">No<span class="number">.0</span>, <span class="built_in">get_next</span>() = <span class="number">0</span></span><br><span class="line">No<span class="number">.1</span>, <span class="built_in">get_next</span>() = <span class="number">1</span></span><br><span class="line">No<span class="number">.2</span>, <span class="built_in">get_next</span>() = <span class="number">2</span></span><br><span class="line">No<span class="number">.3</span>, <span class="built_in">get_next</span>() = <span class="number">3</span></span><br><span class="line">No<span class="number">.4</span>, <span class="built_in">get_next</span>() = <span class="number">4</span></span><br><span class="line">No<span class="number">.5</span>, <span class="built_in">get_next</span>() = <span class="number">5</span></span><br><span class="line">No<span class="number">.6</span>, <span class="built_in">get_next</span>() = <span class="number">6</span></span><br><span class="line">No<span class="number">.7</span>, <span class="built_in">get_next</span>() = <span class="number">7</span></span><br><span class="line">No<span class="number">.8</span>, <span class="built_in">get_next</span>() = <span class="number">8</span></span><br><span class="line">No<span class="number">.9</span>, <span class="built_in">get_next</span>() = <span class="number">9</span></span><br></pre></td></tr></table></figure>
+
+<p>我们接着这个思路将switch语句包装一下，定义几个宏：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> CO_BEGIN static int label = 0; switch(label) &#123; case 0:</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CO_YIELD(ret) do &#123; label = __LINE__; return ret; case __LINE__:; &#125; while(0)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CO_AWAIT do&#123; label = __LINE__; return ; case __LINE__:; &#125; while(0)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CO_FINISH &#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>我们利用这几个宏将上面的程序改造一下，并添加一个func函数</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CO_BEGIN static int label = 0; switch(label) &#123; case 0:</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CO_YIELD(ret) do &#123; label = __LINE__; return ret; case __LINE__:; &#125; while(0)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CO_AWAIT do&#123; label = __LINE__; return ; case __LINE__:; &#125; while(0)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CO_FINISH &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">get_next</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="type">static</span> <span class="type">int</span> i = <span class="number">0</span>;</span><br><span class="line">  <span class="function">CO_BEGIN</span></span><br><span class="line"><span class="function">    <span class="title">for</span><span class="params">(i = <span class="number">0</span>; i&lt;<span class="number">10</span>; ++i)</span> </span>&#123;</span><br><span class="line">      <span class="built_in">CO_YIELD</span>(i);</span><br><span class="line">    &#125;</span><br><span class="line">  CO_FINISH</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">func</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="function">CO_BEGIN</span></span><br><span class="line"><span class="function">    <span class="title">printf</span><span class="params">(<span class="string">&quot;Before suspend in func\n&quot;</span>)</span></span>;</span><br><span class="line">    CO_AWAIT;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;After resume to func\n&quot;</span>);</span><br><span class="line">    CO_AWAIT;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Complete\n&quot;</span>);</span><br><span class="line">  CO_FINISH</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">for</span>(<span class="type">int</span> i  = <span class="number">0</span>; i&lt;<span class="number">10</span>; ++i) &#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;No.%d, get_next() = %d\n&quot;</span>, i, <span class="built_in">get_next</span>());</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;-------------\n&quot;</span>);</span><br><span class="line">  <span class="built_in">func</span>();</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;-------------\n&quot;</span>);</span><br><span class="line">  <span class="built_in">func</span>();</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;-------------\n&quot;</span>);</span><br><span class="line">  <span class="built_in">func</span>();</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>程序运行结果如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">No<span class="number">.0</span>, <span class="built_in">get_next</span>() = <span class="number">0</span></span><br><span class="line">No<span class="number">.1</span>, <span class="built_in">get_next</span>() = <span class="number">1</span></span><br><span class="line">No<span class="number">.2</span>, <span class="built_in">get_next</span>() = <span class="number">2</span></span><br><span class="line">No<span class="number">.3</span>, <span class="built_in">get_next</span>() = <span class="number">3</span></span><br><span class="line">No<span class="number">.4</span>, <span class="built_in">get_next</span>() = <span class="number">4</span></span><br><span class="line">No<span class="number">.5</span>, <span class="built_in">get_next</span>() = <span class="number">5</span></span><br><span class="line">No<span class="number">.6</span>, <span class="built_in">get_next</span>() = <span class="number">6</span></span><br><span class="line">No<span class="number">.7</span>, <span class="built_in">get_next</span>() = <span class="number">7</span></span><br><span class="line">No<span class="number">.8</span>, <span class="built_in">get_next</span>() = <span class="number">8</span></span><br><span class="line">No<span class="number">.9</span>, <span class="built_in">get_next</span>() = <span class="number">9</span></span><br><span class="line">-------------</span><br><span class="line">Before suspend in func</span><br><span class="line">-------------</span><br><span class="line">After resume to func</span><br><span class="line">-------------</span><br><span class="line">Complete</span><br></pre></td></tr></table></figure>
+
+<p>显然，这个程序只能帮助我们更好理解无栈协程的思路。</p>
+<h1 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h1><ul>
+<li>惰性序列生成器</li>
+<li>IO多路复用，搭配epoll，配合定时器hook系统调用，可以在阻塞时通过切换协程让出CPU资源，定时器超时后再切换回来，一个很直接的例子是sleep() 函数。</li>
+<li>TODO</li>
+<li></li>
+</ul>
+<h1 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h1><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;coroutine&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;functional&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;chrono&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;thread&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">IntReader</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">        <span class="function"><span class="type">bool</span> <span class="title">await_ready</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="type">void</span> <span class="title">await_suspend</span><span class="params">(std::coroutine_handle&lt;&gt; handle)</span> </span>&#123;</span><br><span class="line">                <span class="function">std::thread <span class="title">thread</span><span class="params">([<span class="keyword">this</span>, handle]() &#123;</span></span></span><br><span class="line"><span class="params"><span class="function">                                        sleep(<span class="number">3</span>);</span></span></span><br><span class="line"><span class="params"><span class="function">                                        value_ = <span class="number">101</span>;</span></span></span><br><span class="line"><span class="params"><span class="function"></span></span></span><br><span class="line"><span class="params"><span class="function">                                        handle.resume();</span></span></span><br><span class="line"><span class="params"><span class="function">                                &#125;)</span></span>;</span><br><span class="line">                thread.<span class="built_in">detach</span>();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="type">int</span> <span class="title">await_resume</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">return</span> value_;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">        <span class="type">int</span> value_&#123;<span class="number">0</span>&#125;;</span><br><span class="line"></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Task</span> &#123;</span><br><span class="line">        <span class="keyword">class</span> <span class="title class_">promise_type</span> &#123;</span><br><span class="line">        <span class="keyword">public</span>:</span><br><span class="line">                <span class="function">Task <span class="title">get_return_object</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> &#123;&#125;;&#125;</span><br><span class="line">                <span class="function">std::suspend_never <span class="title">initial_suspend</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> &#123;&#125;;&#125;</span><br><span class="line">                <span class="function">std::suspend_never <span class="title">final_suspend</span><span class="params">()</span> <span class="keyword">noexcept</span> </span>&#123; <span class="keyword">return</span> &#123;&#125;;&#125;</span><br><span class="line">                <span class="function"><span class="type">void</span> <span class="title">unhandled_exception</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">                <span class="function"><span class="type">void</span> <span class="title">return_void</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">        &#125;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function">Task <span class="title">func</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        IntReader reader1;</span><br><span class="line">        <span class="type">int</span> total = <span class="keyword">co_await</span> reader1;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;after resume from reader1, current thread id: &quot;</span> &lt;&lt; std::this_thread::<span class="built_in">get_id</span>()&lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">        IntReader reader2;</span><br><span class="line">        total += <span class="keyword">co_await</span> reader2;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;after resume from reader2, current thread id: &quot;</span> &lt;&lt; std::this_thread::<span class="built_in">get_id</span>()&lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">        IntReader reader3;</span><br><span class="line">        total += <span class="keyword">co_await</span> reader3;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;after resume from reader3, current thread id: &quot;</span> &lt;&lt; std::this_thread::<span class="built_in">get_id</span>()&lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">        std::cout &lt;&lt; total &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        <span class="built_in">func</span>();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">15</span>; ++i) &#123;</span><br><span class="line">                std::cout &lt;&lt;<span class="string">&quot;current thread id: &quot;</span> &lt;&lt; std::this_thread::<span class="built_in">get_id</span>() &lt;&lt;<span class="string">&quot; this is &quot;</span> &lt;&lt; i &lt;&lt; <span class="string">&quot; second.\n&quot;</span>;</span><br><span class="line">                <span class="built_in">sleep</span>(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;coroutine&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;functional&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;chrono&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;thread&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">IntReader</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">        <span class="function"><span class="type">bool</span> <span class="title">await_ready</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="type">void</span> <span class="title">await_suspend</span><span class="params">(std::coroutine_handle&lt;&gt; handle)</span> </span>&#123;</span><br><span class="line">                <span class="function">std::thread <span class="title">thread</span><span class="params">([<span class="keyword">this</span>, handle]() &#123;</span></span></span><br><span class="line"><span class="params"><span class="function">                                        <span class="type">static</span> <span class="type">int</span> seed = <span class="number">0</span>;</span></span></span><br><span class="line"><span class="params"><span class="function">                                        value_ = ++ seed;</span></span></span><br><span class="line"><span class="params"><span class="function"></span></span></span><br><span class="line"><span class="params"><span class="function">                                        handle.resume();</span></span></span><br><span class="line"><span class="params"><span class="function">                                &#125;)</span></span>;</span><br><span class="line">                thread.<span class="built_in">detach</span>();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="type">int</span> <span class="title">await_resume</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">return</span> value_;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">        <span class="type">int</span> value_&#123;<span class="number">0</span>&#125;;</span><br><span class="line"></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Task</span> &#123;</span><br><span class="line">        <span class="keyword">class</span> <span class="title class_">promise_type</span> &#123;</span><br><span class="line">        <span class="keyword">public</span>:</span><br><span class="line">                <span class="function">Task <span class="title">get_return_object</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                        <span class="keyword">return</span> Task&#123; std::coroutine_handle&lt;promise_type&gt;::<span class="built_in">from_promise</span>(*<span class="keyword">this</span>) &#125;;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="function">std::suspend_always <span class="title">yield_value</span><span class="params">(<span class="type">int</span> val)</span> </span>&#123;</span><br><span class="line">                        value_ = val;</span><br><span class="line">                        <span class="keyword">return</span> &#123;&#125;;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="function">std::suspend_never <span class="title">initial_suspend</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> &#123;&#125;;&#125;</span><br><span class="line">                <span class="function">std::suspend_never <span class="title">final_suspend</span><span class="params">()</span> <span class="keyword">noexcept</span> </span>&#123; <span class="keyword">return</span> &#123;&#125;;&#125;</span><br><span class="line">                <span class="function"><span class="type">void</span> <span class="title">unhandled_exception</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">                <span class="function"><span class="type">void</span> <span class="title">return_void</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">                <span class="function"><span class="type">int</span> <span class="title">get_val</span><span class="params">()</span> <span class="type">const</span> </span>&#123;</span><br><span class="line">                        <span class="keyword">return</span> value_;</span><br><span class="line">                &#125;</span><br><span class="line">        <span class="keyword">private</span>:</span><br><span class="line">                <span class="type">int</span> value_&#123;&#125;;</span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">        <span class="built_in">Task</span>(std::coroutine_handle&lt;promise_type&gt; handle) : <span class="built_in">coroutine_handle_</span>(handle) &#123;&#125;</span><br><span class="line">        <span class="function"><span class="type">int</span> <span class="title">get_val</span><span class="params">()</span> <span class="type">const</span> </span>&#123;</span><br><span class="line">                <span class="keyword">return</span> coroutine_handle_.<span class="built_in">promise</span>().<span class="built_in">get_val</span>();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="type">void</span> <span class="title">Next</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                coroutine_handle_.<span class="built_in">resume</span>();</span><br><span class="line">        &#125;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">        std::coroutine_handle&lt;promise_type&gt; coroutine_handle_;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function">Task <span class="title">GetInt</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">while</span>(<span class="literal">true</span>) &#123;</span><br><span class="line">                IntReader reader;</span><br><span class="line">                <span class="type">int</span> value = <span class="keyword">co_await</span> reader;</span><br><span class="line">                <span class="keyword">co_yield</span> value;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">Task <span class="title">func</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        IntReader reader1;</span><br><span class="line">        <span class="type">int</span> total = <span class="keyword">co_await</span> reader1;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;after resume from reader1, current thread id: &quot;</span> &lt;&lt; std::this_thread::<span class="built_in">get_id</span>()&lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">        IntReader reader2;</span><br><span class="line">        total += <span class="keyword">co_await</span> reader2;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;after resume from reader2, current thread id: &quot;</span> &lt;&lt; std::this_thread::<span class="built_in">get_id</span>()&lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">        IntReader reader3;</span><br><span class="line">        total += <span class="keyword">co_await</span> reader3;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;after resume from reader3, current thread id: &quot;</span> &lt;&lt; std::this_thread::<span class="built_in">get_id</span>()&lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">        std::cout &lt;&lt; total &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        <span class="keyword">auto</span> task = <span class="built_in">GetInt</span>();</span><br><span class="line">        std::string line;</span><br><span class="line">        <span class="keyword">while</span>(std::cin &gt;&gt; line) &#123;</span><br><span class="line">                std::cout &lt;&lt; task.<span class="built_in">get_val</span>() &lt;&lt; std::endl;</span><br><span class="line">                task.<span class="built_in">Next</span>();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://www.xinfinite.net/t/topic/3518">https://www.xinfinite.net/t/topic/3518</a><br><a target="_blank" rel="noopener" href="http://www.uml.org.cn/c%2B%2B/202503064.asp">http://www.uml.org.cn/c%2B%2B/202503064.asp</a><br><a target="_blank" rel="noopener" href="https://zplutor.github.io/2022/03/25/cpp-coroutine-beginner/">https://zplutor.github.io/2022/03/25/cpp-coroutine-beginner/</a><br><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/X86_calling_conventions#Caller-saved_(volatile)_registers">https://en.wikipedia.org/wiki/X86_calling_conventions#Caller-saved_(volatile)_registers</a><br><a target="_blank" rel="noopener" href="https://www.bennyhuo.com/book/cpp-coroutines/02-generator.html#%E9%97%AE%E9%A2%98-1-%E6%97%A0%E6%B3%95%E7%A1%AE%E5%AE%9A%E6%98%AF%E5%90%A6%E5%AD%98%E5%9C%A8%E4%B8%8B%E4%B8%80%E4%B8%AA%E5%85%83%E7%B4%A0">https://www.bennyhuo.com/book/cpp-coroutines/02-generator.html#%E9%97%AE%E9%A2%98-1-%E6%97%A0%E6%B3%95%E7%A1%AE%E5%AE%9A%E6%98%AF%E5%90%A6%E5%AD%98%E5%9C%A8%E4%B8%8B%E4%B8%80%E4%B8%AA%E5%85%83%E7%B4%A0</a><br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/497224333">https://zhuanlan.zhihu.com/p/497224333</a><br><a target="_blank" rel="noopener" href="https://lewissbaker.github.io/2017/09/25/coroutine-theory">https://lewissbaker.github.io/2017/09/25/coroutine-theory</a><br><a target="_blank" rel="noopener" href="https://mthli.xyz/stackful-stackless/">https://mthli.xyz/stackful-stackless/</a><br><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/X86_calling_conventions#List_of_x86_calling_conventions">https://en.wikipedia.org/wiki/X86_calling_conventions#List_of_x86_calling_conventions</a><br><a target="_blank" rel="noopener" href="https://mthli.xyz/coroutines-in-c/">https://mthli.xyz/coroutines-in-c/</a><br><a target="_blank" rel="noopener" href="https://www.chiark.greenend.org.uk/~sgtatham/coroutines.html">https://www.chiark.greenend.org.uk/~sgtatham/coroutines.html</a><br><a target="_blank" rel="noopener" href="https://www.xinfinite.net/t/topic/3518">https://www.xinfinite.net/t/topic/3518</a><br><a target="_blank" rel="noopener" href="https://lewissbaker.github.io/">https://lewissbaker.github.io/</a></p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>Copyright： </strong>
+          
+          Copyright is owned by the author. For commercial reprints, please contact the author for authorization. For non-commercial reprints, please indicate the source.
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2025/06/25/Corountine/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Tech/" rel="tag">Tech</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+    
+      <a href="/2025/06/09/%E5%87%A0%E4%B8%AA%E5%A4%9A%E7%BA%BF%E7%A8%8B%E9%A2%98-md/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">几个多线程题.md</div>
+      </a>
+    
+  </nav>
+
+  
+   
+  
+   
+    <script src="https://cdn.staticfile.org/twikoo/1.4.18/twikoo.all.min.js"></script>
+    <div id="twikoo" class="twikoo"></div>
+    <script>
+        twikoo.init({
+            envId: ""
+        })
+    </script>
+ 
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2015-2025
+        <i class="ri-heart-fill heart_icon"></i> Xudong0722
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>Visitors:<span id="busuanzi_value_site_uv"></span></span>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>Views:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>    
+    </main>
+    <div class="float_btns">
+      <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+    </div>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="MoonLight"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" target="_blank" rel="noopener" href="http://zxd-sbq.lofter.com">摄影</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/friends">友链</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/2019/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-3.6.0.min.js"></script>
+ 
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+ 
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: ".tocbot",
+    contentSelector: ".article-entry",
+    headingSelector: "h1, h2, h3, h4, h5, h6",
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: "main",
+    positionFixedSelector: ".tocbot",
+    positionFixedClass: "is-position-fixed",
+    fixedSidebarOffset: "auto",
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.css"
+/>
+<script src="https://cdn.staticfile.org/justifiedGallery/3.8.1/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+ <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/default-skin/default-skin.min.css">
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.js"></script>
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script> 
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+ 
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+ 
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+ 
+<link rel="stylesheet" href="/css/clipboard.css">
+ <script src="https://cdn.staticfile.org/clipboard.js/2.0.10/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+ 
+<!-- CanvasBackground -->
+
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({ theme: "forest" });
+  }
+</script>
+
+
+    
+    
+
+  </div>
+</body>
+
+</html>
