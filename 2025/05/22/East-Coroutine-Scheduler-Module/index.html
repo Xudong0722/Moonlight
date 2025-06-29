@@ -80,7 +80,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> Word count:</span>
-            <span class="post-count">0</span>
+            <span class="post-count">514</span>
         </span>
     </span>
 
@@ -96,13 +96,25 @@
  
     </div>
       
+    <div class="tocbot"></div>
+
 
 
 
   
     <div class="article-entry" itemprop="articleBody">
        
-   
+  <h1 id="调度器模块"><a href="#调度器模块" class="headerlink" title="调度器模块"></a>调度器模块</h1><p>单单一个协程发挥不了威力，我们需要管理起来，Scheduler就是用来调度协程的。<br>我们用一张图来理解协程调度器：</p>
+<p><img src="/../images/East-Scheduler.jpg" alt="Scheduler"></p>
+<p>首先先搞清楚几个变量：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//当前线程的调度器，同一个调度器下的所有线程指向同一个调度器</span></span><br><span class="line"><span class="type">static</span> <span class="keyword">thread_local</span> Scheduler* t_scheduler = <span class="literal">nullptr</span>;  </span><br><span class="line"><span class="comment">//当前线程的调度协程，每个线程都独有一个，包括caller线程</span></span><br><span class="line"><span class="type">static</span> <span class="keyword">thread_local</span> Fiber* t_scheduler_fiber = <span class="literal">nullptr</span>;  </span><br></pre></td></tr></table></figure>
+<p>这两个变量都是thread_local也就是每个线程都有一个，<br>但是一个调度器创建出来的线程的t_scheduler都是指向创建他们的调度器。<br>而t_shceduler_fiber就是各个线程的主协程了，方便和任务协程做切换。</p>
+<p>接着我们根据图来看调度器的运作方式：</p>
+<p>1.构造Scheduler的时候根据参数创建线程池，每个线程的入口函数都是run</p>
+<p>2.线程启动后，都会将线程本身的主协程设置成t_scheduler_fiber，然后互斥的从队列中取出任务执行，执行后再切换回调度协程执行下一个任务，如果当前没有任务可以执行，就切换成idle协程，由于idle协程目前循环判断调度器是否停止，不停止就切换回调度协程，所以如果没有任务就会一直循环知道满足stop的条件。</p>
+<p>3.调度器stop时，如果创建scheduler的线程也参与到调度中来的话，就会执行一次run方法，将任务执行完毕。</p>
+<p>此外，我们的协程是非对称协程，即caller和callee的关系是固定的，协程resume的时候切换的协程就是yield后返回的协程。<br>而对称协程在于协程调用和返回的地位是相等的，协程启动之后就和启动之前没关系了</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">非对称协程：</span><br><span class="line"></span><br><span class="line">Scheduler        Fiber-1             Fiber-2 </span><br><span class="line">    |</span><br><span class="line">    |----------------resume------------&gt;|</span><br><span class="line">    |                                   |</span><br><span class="line">    |                                   |</span><br><span class="line">    |&lt;----------------yield-------------|</span><br><span class="line">    |</span><br><span class="line">    |</span><br><span class="line">    |----resume----&gt;|</span><br><span class="line">    |               |</span><br><span class="line">    |               |</span><br><span class="line">    |&lt;----yield-----|</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">对称协程：</span><br><span class="line">Scheduler       Fiber-1              Fiber-2</span><br><span class="line">    |</span><br><span class="line">    |----resume---&gt;|</span><br><span class="line">    |              |</span><br><span class="line">    |              |--------resume-----&gt;|</span><br><span class="line">    |                                   |</span><br><span class="line">    |                                   |</span><br><span class="line">    |              |&lt;-------yield-------|</span><br><span class="line">    |              |</span><br><span class="line">    |              |</span><br><span class="line">    |&lt;----yield----|</span><br></pre></td></tr></table></figure> 
       <!-- reward -->
       
     </div>
@@ -171,6 +183,8 @@
 </div>
 
 <div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Projext/" rel="tag">Projext</a></li></ul>
+
     </footer>
   </div>
 
